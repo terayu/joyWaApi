@@ -1,0 +1,66 @@
+
+syntax = "proto3";
+
+
+package rpc;
+option go_package = "github.com/terayu/joyWaApi/rpc";
+
+message NoReturnMessage{
+}
+
+message TagValsMessage{
+    repeated string Tags=1;
+    repeated string Vals=2;
+}
+message TagBitMessage{
+    repeated string Tags=1;
+    repeated bool Vals=2;
+    repeated int32 Pulse=3;
+}
+
+message TagsMessage{
+    repeated string Tags=1;
+}
+message ValsMessage{
+    repeated string Vals=1;
+}
+
+message BitMessage{
+    repeated bool Vals=1;
+}
+message BoolMessage{
+    bool Val=1;
+}
+
+message RequestType{
+}
+
+service JoyWaApi {
+    rpc RConnect(RequestType) returns(NoReturnMessage){}
+    rpc RDisConnect(RequestType) returns(NoReturnMessage){}
+    rpc RDisConnectForce(RequestType) returns(NoReturnMessage){}
+    rpc RStartServer(RequestType) returns(NoReturnMessage){}
+
+    rpc RReadF(TagsMessage) returns(ValsMessage){}
+    rpc RRead(TagsMessage) returns(ValsMessage){}
+
+    rpc RWriteF(TagValsMessage) returns(NoReturnMessage){}
+
+    rpc RReadB(TagBitMessage) returns(BitMessage){}
+    rpc RWriteB(TagBitMessage) returns(NoReturnMessage){}
+    rpc RWriteS(TagValsMessage) returns(NoReturnMessage){}
+    rpc RWrite(TagValsMessage) returns(NoReturnMessage){}
+    rpc RPing(RequestType) returns(BoolMessage){}
+
+}
+
+
+
+
+
+
+
+
+
+
+

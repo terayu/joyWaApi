@@ -1,0 +1,68 @@
+# joyWaApi（gRPC）を GraphQL で公開するスキーマ。
+# タグ名は JoyWatcher のタグ名（例: LOCAL$ALM.EMG$VALUE）。
+# 1 回の要求で扱えるタグ数には上限がある（joyWaApi server -gqlmaxtags、既定 1000）。
+
+"タグと値（文字列）"
+type TagValue {
+  tag: String!
+  value: String!
+}
+
+"タグと値（数値）"
+type TagFloat {
+  tag: String!
+  value: Float!
+}
+
+"タグと値（BIT）"
+type TagBit {
+  tag: String!
+  value: Boolean!
+}
+
+input TagValueInput {
+  tag: String!
+  value: String!
+}
+
+input TagFloatInput {
+  tag: String!
+  value: Float!
+}
+
+input TagBitInput {
+  tag: String!
+  value: Boolean!
+  "指定した秒数後に OFF に戻す（パルス出力）。省略または 0 なら戻さない"
+  pulseSec: Int
+}
+
+type Query {
+  "joyWaApi サーバーが JoyWatcher と読み書きできるか（RPing）"
+  ping: Boolean!
+  "値を文字列で読む（RRead）"
+  read(tags: [String!]!): [TagValue!]!
+  "値を数値で読む（RReadF。小数点以下 4 桁）"
+  readFloat(tags: [String!]!): [TagFloat!]!
+  "値を BIT で読む（RReadB）"
+  readBit(tags: [String!]!): [TagBit!]!
+}
+
+type Mutation {
+  "タグの種類に合わせて書き込む（RWrite）"
+  write(input: [TagValueInput!]!): Boolean!
+  "文字列として書き込む（RWriteS）"
+  writeString(input: [TagValueInput!]!): Boolean!
+  "数値として書き込む（RWriteF）"
+  writeFloat(input: [TagFloatInput!]!): Boolean!
+  "BIT を書き込む（RWriteB）"
+  writeBit(input: [TagBitInput!]!): Boolean!
+}
+
+type Subscription {
+  """
+  intervalMs ごとに tags を読み、値が変わったタグだけを配信する。
+  購読を始めた直後は全タグの現在値を配信する。読めなかった周期は飛ばす
+  """
+  tagChanged(tags: [String!]!, intervalMs: Int = 1000): [TagValue!]!
+}

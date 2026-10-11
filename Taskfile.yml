@@ -1,0 +1,18 @@
+version: "3"
+vars:
+  BINARY: 'joyWaApi'
+  BINDIR: 'bin'
+tasks:
+  # JoyWaApi.dll が 32bit なので、どの OS でも Windows の 32bit 向けにビルドする
+  build:
+    env:
+      GOOS: windows
+      GOARCH: 386
+      CGO_ENABLED: 0
+    cmds:
+      - 'go build -tags timetzdata,server -o {{.BINDIR}}/{{.BINARY}}.exe app/*.go'
+
+  # GraphQL のスキーマ（graph/schema.graphqls）を変えたら実行する
+  generate:
+    cmds:
+      - 'go tool gqlgen generate'
